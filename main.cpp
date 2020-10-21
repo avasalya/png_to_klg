@@ -26,6 +26,7 @@
 #define NONE "\033[m"
 #define RED "\033[0;32;31m"
 
+// using namespace cv;
 
 extern char *optarg;
 extern int optind;
@@ -46,7 +47,7 @@ double g_dScale = 5000;//depth scale
 
 
 /** @brief Convert png image files to .klg format
- *  
+ *
  *  @param vec_info vector of path <timestamp, <depth path, rgb path>>
  *  @param strKlgFileName output file name
  *  @return void
@@ -70,9 +71,9 @@ void convertToKlg(
     VEC_INFO::iterator it = vec_info.begin();
     int count = 1;
     std::cout << "Progress:\n";
-    for(it; it != vec_info.end(); it++) 
+    for(it; it != vec_info.end(); it++)
     {
-        std::string strAbsPathDepth = 
+        std::string strAbsPathDepth =
             std::string(
                         getcwd(NULL, 0)) + "/" +
                         it->second.first;
@@ -89,24 +90,32 @@ void convertToKlg(
                     getcwd(NULL, 0)) + "/" +
                     it->second.second;
 
-        IplImage *img = 
-            cvLoadImage(strAbsPath.c_str(), 
-                        CV_LOAD_IMAGE_UNCHANGED);
-        if(img == NULL)
+        // IplImage *img = cvLoadImage(strAbsPath.c_str(), CV_LOAD_IMAGE_UNCHANGED);
+        cv::Mat img = imread(strAbsPath.c_str(), cv::IMREAD_UNCHANGED);
+        cv::Size s = img.size();
+
+        if(img.empty())
         {
             fclose(logFile);
             return;
         }
+        // if(img == NULL)
+        // {
+        //     fclose(logFile);
+        //     return;
+        // }
 
-        int32_t imageSize = img->height * img->width * sizeof(unsigned char) * 3;
+        // int32_t imageSize = img->height * img->width * sizeof(unsigned char) * 3;
+        int32_t imageSize = s.height * s.width * sizeof(unsigned char) * 3;
 
         unsigned char * rgbData = 0;
-        rgbData = (unsigned char *)img->imageData;
+        rgbData = (unsigned char *)img.data;
+        // rgbData = (unsigned char *)img->imageData;
 
         std::cout << '\r'
-                  << std::setw(4) << std::setfill('0') << count << " / "
-                  << std::setw(4) << std::setfill('0') << vec_info.size() 
-                  << std::flush;
+                << std::setw(4) << std::setfill('0') << count << " / "
+                << std::setw(4) << std::setfill('0') << vec_info.size()
+                << std::flush;
         count++;
 
         /// Timestamp
@@ -124,7 +133,8 @@ void convertToKlg(
         /// RGB buffer
         fwrite(rgbData, imageSize, 1, logFile);
 
-        cvReleaseImage(&img);
+        img.release();
+        // cvReleaseImage(&img);
         depth.release();
     }
     std::cout << std::endl;
@@ -148,12 +158,12 @@ int parseInfoFile(
     char * line = NULL;
     size_t len = 0;
     ssize_t read;
-    
+
     FILE *pFile = fopen(strAssociation_Path.c_str(), "r");
     if(!pFile) {
         return -1;
     }
-    
+
     int iFrameCnt = 0;
     while ((read = getline(&line, &len, pFile)) != -1) {
 
@@ -162,11 +172,11 @@ int parseInfoFile(
         int iIdxToken = 0;
         while (getline(is, part))
         {
-            if('#' == part[0])/// Skip file comment '#" 
+            if('#' == part[0])/// Skip file comment '#"
             {
                 continue;
             }
-        
+
             int64_t timeSeq = 0;
             std::string strDepthPath;
             std::string strRgbPath;
@@ -180,7 +190,7 @@ int parseInfoFile(
                 {//first token which is time
 
 
-                } 
+                }
                 else if(3 == iIdxToken)//rgb path
                 {
                     strRgbPath = token;
@@ -190,13 +200,13 @@ int parseInfoFile(
                     /// Do nothing
                     //std::cout << token << std::endl;
                     token.erase(
-                        std::remove(token.begin(), 
+                        std::remove(token.begin(),
                             token.end(), '.'), token.end());
                     //std::cout << token << std::endl;
                     long long unsigned int numb;
                     std::istringstream ( token ) >> numb;
-                    
-                    if(true == g_bFlag_TUM) 
+
+                    if(true == g_bFlag_TUM)
                     {
                         timeSeq = (int64_t)numb;
                         //timeSeq = iFrameCnt;
@@ -216,7 +226,7 @@ int parseInfoFile(
             PATH_PAIR path_pair;
             if(g_bFlag_reverse)
                 path_pair = PATH_PAIR(strRgbPath, strDepthPath);
-            else 
+            else
                 path_pair = PATH_PAIR(strDepthPath, strRgbPath);
             SEQ seq(timeSeq, path_pair);
             vec_info.push_back(seq);
@@ -265,8 +275,8 @@ int main(int argc, char* argv[])
     }
     if(option_count < 2)
     {
-        fprintf(stderr, 
-            "Usage: ./pngtoklg -w (working directory) -o (klg file name)\n"    
+        fprintf(stderr,
+            "Usage: ./pngtoklg -w (working directory) -o (klg file name)\n"
             "\n"
             "-w working directory\n"
             "-o output klg filename\n"
@@ -282,7 +292,7 @@ int main(int argc, char* argv[])
 
     /// Change working directory
     int ret = chdir(strWorkingDir.c_str());
-    if(ret != 0) 
+    if(ret != 0)
     {
         fprintf(stderr, RED "dataset path not exist" NONE);
     }
@@ -295,19 +305,19 @@ int main(int argc, char* argv[])
         strAssociation_Path += '/';
     }
     strAssociation_Path += "associations.txt";
-    
+
     /// Parse files
     // (timestamp, (depth path, rgb path) )
     VEC_INFO vec_info;
 
 
     int err = parseInfoFile(
-                strAssociation_Path, 
+                strAssociation_Path,
                 vec_info);
     if(err != 0)
     {
-        fprintf(stderr, 
-            RED "Fail to find associations.txt under working directory!\n" NONE); 
+        fprintf(stderr,
+            RED "Fail to find associations.txt under working directory!\n" NONE);
         return -1;
     }
 
