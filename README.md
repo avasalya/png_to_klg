@@ -13,7 +13,7 @@ You can cite by
   url       = {https://github.com/HTLife/png_to_klg}
 }
 ```
-> docker image is provided here https://github.com/HTLife/png_to_klg-docker 
+> docker image is provided here https://github.com/HTLife/png_to_klg-docker
 
 > converted klg could be download from [here](https://drive.google.com/drive/folders/1nen4wcKzB1PKhz9MiA13rPCS0QzOMwBU?usp=sharing)
 
@@ -42,7 +42,7 @@ mkdir build
 cd build
 cmake -D BUILD_NEW_PYTHON_SUPPORT=OFF -D WITH_OPENCL=OFF -D WITH_OPENMP=ON -D INSTALL_C_EXAMPLES=OFF -D BUILD_DOCS=OFF -D BUILD_EXAMPLES=OFF -D WITH_QT=OFF -D WITH_OPENGL=OFF -D WITH_VTK=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_CUDA=OFF -D BUILD_opencv_gpu=OFF ..
 
-or 
+or
 ## used with openCV4.3.0
 sudo cmake -D BUILD_NEW_PYTHON_SUPPORT=OFF -D WITH_OPENCL=OFF -D WITH_OPENMP=ON -D INSTALL_C_EXAMPLES=OFF -D BUILD_DOCS=OFF -D BUILD_EXAMPLES=OFF -D WITH_QT=OFF -D WITH_OPENGL=OFF -D WITH_VTK=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_CUDA=OFF -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda -D BUILD_opencv_gpu=OFF ..
 
@@ -50,7 +50,7 @@ sudo cmake -D BUILD_NEW_PYTHON_SUPPORT=OFF -D WITH_OPENCL=OFF -D WITH_OPENMP=ON 
 make -j8
 sudo make install
 ```
-  
+
 ## Python package
   - numpy
 
@@ -79,7 +79,11 @@ All parameters are required.
 - -t TUM format / defualt format is ICL-NUIM
 - -s Scale factor in floating point.  default=5000
 
->For more **scale factor** detail, please reference: 
+inside build folder
+```
+ ./pngtoklg -w ../pngfiles -o pngfiles.klg -s 1000
+```
+>For more **scale factor** detail, please reference:
 >http://vision.in.tum.de/data/datasets/rgbd-dataset/file_formats#intrinsic_camera_calibration_of_the_kinect
 
 ## Prerequirement##
@@ -93,7 +97,7 @@ Download the file provided by [ICL-NUIM](https://www.doc.ic.ac.uk/~ahanda/VaFRIC
 
 ### TUM ###
  [TUM RGB-D png dataset](http://vision.in.tum.de/data/datasets/rgbd-dataset/download#freiburg1_desk)
- 
+
 ## Convert TUM dataset ##
 ```bash
 ./pngtoklg -w '/TUM/rgbd_dataset_freiburg2_desk/' -o '/TUM/rgbd_dataset_freiburg2_desk/fr2desk.klg' -t

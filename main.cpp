@@ -316,6 +316,7 @@ int main(int argc, char* argv[])
                 vec_info);
     if(err != 0)
     {
+        std::cout<< strAssociation_Path << "\n";
         fprintf(stderr,
             RED "Fail to find associations.txt under working directory!\n" NONE);
         return -1;

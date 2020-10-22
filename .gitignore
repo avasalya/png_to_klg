@@ -31,6 +31,8 @@
 *.out
 *.app
 
+*pngfiles/
+*pngfiles2/
 
 
 # CMake

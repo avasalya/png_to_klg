@@ -1,1 +1,2 @@
-python associate.py PATH_TO_SEQUENCE/rgb.txt PATH_TO_SEQUENCE/depth.txt > associations.txt
+# run inside rgb/depth folder
+python2 ../associate.py depth.txt rgb.txt > associations.txt
