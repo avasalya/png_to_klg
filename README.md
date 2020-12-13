@@ -79,6 +79,11 @@ All parameters are required.
 - -t TUM format / defualt format is ICL-NUIM
 - -s Scale factor in floating point.  default=5000
 
+
+# run inside rgb/depth folder
+```python2 ../associate.py depth.txt rgb.txt > associations.txt```
+
+
 inside build folder
 ```
  ./pngtoklg -w ../pngfiles -o pngfiles.klg -s 1000
